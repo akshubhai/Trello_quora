@@ -29,6 +29,7 @@ public class UserAuthTokenEntity implements Serializable {
 
     @Column(name = "UUID")
     @Size(max = 64)
+    @NotNull
     private String uuid;
 
 //    @ManyToOne
@@ -41,8 +42,8 @@ public class UserAuthTokenEntity implements Serializable {
 
 
     @Column(name = "ACCESS_TOKEN")
-    @NotNull
     @Size(max = 500)
+    @NotNull
     private String accessToken;
 
     @Column(name = "EXPIRES_AT")

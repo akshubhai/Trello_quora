@@ -27,6 +27,7 @@ public class AnswerEntity implements Serializable {
 
     @Column(name = "UUID")
     @Size(max = 64)
+    @NotNull
     private String uuid;
 
     @Column(name = "ANS")

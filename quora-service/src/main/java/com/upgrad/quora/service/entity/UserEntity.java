@@ -9,14 +9,14 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "users")
 @NamedQueries(
         {
                 @NamedQuery(name = "userByUuid", query = "select u from UserEntity u where u.uuid = :uuid"),
-                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email")
+                @NamedQuery(name = "userByEmail", query = "select u from UserEntity u where u.email =:email"),
+                @NamedQuery(name = "userByUserName", query = "select u from UserEntity u where u.userName =:userName")
         }
 )
 
@@ -36,30 +36,29 @@ public class UserEntity implements Serializable {
 //    @JoinColumn(name = "ROLE_ID")
 //    private RoleEntity role;
 
-
-
     @Column(name = "FIRSTNAME")
     @NotNull
-    @Size(max = 200)
+    @Size(max = 30)
     private String firstName;
 
     @Column(name = "LASTNAME")
     @NotNull
-    @Size(max = 200)
+    @Size(max = 30)
     private String lastName;
 
     @Column(name = "USERNAME")
     @NotNull
-    @Size(max = 200)
+    @Size(max = 30)
     private String userName;
 
     @Column(name = "EMAIL")
     @NotNull
-    @Size(max = 200)
+    @Size(max = 50)
     private String email;
 
     //@ToStringExclude
     @Column(name = "PASSWORD")
+    @NotNull
     private String password;
 
     @Column(name = "SALT")
@@ -69,27 +68,23 @@ public class UserEntity implements Serializable {
     private String salt;
 
     @Column(name = "COUNTRY")
-    @NotNull
-    @Size(max = 200)
+    @Size(max = 30)
     private String country;
 
     @Column(name = "ABOUTME")
-    @NotNull
-    @Size(max = 1000)
+    @Size(max = 50)
     private String aboutMe;
 
     @Column(name = "DOB")
-    @NotNull
-    private ZonedDateTime dob;
+    @Size(max = 30)
+    private String dob;
 
     @Column(name = "ROLE")
-    @NotNull
-    @Size(max = 50)
+    @Size(max = 30)
     private String role;
 
     @Column(name = "CONTACTNUMBER")
-    @NotNull
-    @Size(max = 50)
+    @Size(max = 30)
     private String contactnumber;
 
 
@@ -189,11 +184,11 @@ public class UserEntity implements Serializable {
         this.aboutMe = aboutMe;
     }
 
-    public ZonedDateTime getDob() {
+    public String getDob() {
         return dob;
     }
 
-    public void setDob(ZonedDateTime dob) {
+    public void setDob(String dob) {
         this.dob = dob;
     }
 
