@@ -5,6 +5,7 @@ import com.upgrad.quora.service.dao.UserDao;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
+import com.upgrad.quora.service.exception.SignOutRestrictedException;
 import com.upgrad.quora.service.exception.SignUpRestrictedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,8 @@ import java.time.ZonedDateTime;
 import java.util.Base64;
 import java.util.UUID;
 
-import static com.upgrad.quora.service.common.GenericErrorCode.ATH_001;
-import static com.upgrad.quora.service.common.GenericErrorCode.ATH_002;
-
+import static com.upgrad.quora.service.common.GenericErrorCode.*;
+import static com.upgrad.quora.service.common.GenericErrorCode.SGOR_001;
 
 
 @Service
@@ -42,12 +42,12 @@ public class UserBusinessService {
     public void verificationSignUp(String userName, String email) throws SignUpRestrictedException {
         UserEntity newuserEntity = userDao.getUserByUserName(userName);
         if(newuserEntity != null){
-            throw new SignUpRestrictedException("SGR-001", "Try any other Username, this Username has already been taken");
+            throw new SignUpRestrictedException(SGUR_001.getCode(), SGUR_001.getDefaultMessage());
         }
 
         UserEntity newuserEntity1 = userDao.getUserByEmail(email);
         if(newuserEntity1 != null){
-            throw new SignUpRestrictedException("SGR-002", "This user has already been registered, try with any other emailId");
+            throw new SignUpRestrictedException(SGUR_002.getCode(), SGUR_002.getDefaultMessage());
         }
     }
 
@@ -109,7 +109,25 @@ public class UserBusinessService {
         return userAuthToken;
     }
 
-    public UserEntity userSingOut(String authorization) {
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public UserEntity userSignOut(final String authorization) throws SignOutRestrictedException {
+
+        UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorization);
+
+        if(userAuthTokenEntity == null){
+            throw new SignOutRestrictedException(SGOR_001.getCode(), SGOR_001.getDefaultMessage());
+        }
+
+        if (userAuthTokenEntity.getLogoutAt() != null) {
+            throw new SignOutRestrictedException(SGOR_001.getCode(), SGOR_001.getDefaultMessage());
+        }
+        userAuthTokenEntity.setLogoutAt(ZonedDateTime.now());
+        userAuthTokenEntity = userDao.editAuthToken(userAuthTokenEntity);
+
+        return userAuthTokenEntity.getUser();
     }
+
+
 }
 
