@@ -22,7 +22,9 @@ public enum GenericErrorCode implements ErrorCode {
     ATHR_001_ADMIN("ATHR-001", "User has not signed in"),
     ATHR_002_ADMIN("ATHR-002", "User is signed out"),
     ATHR_003_ADMIN("ATHR-003", "Unauthorized Access, Entered user is not an admin"),
-    USR_001_ADMIN("USR-001", "User with entered uuid to be deleted does not exist");
+    USR_001_ADMIN("USR-001", "User with entered uuid to be deleted does not exist"),
+    ATHR_001_CREATEQUESTION("ATHR-001", "User has not signed in"),
+    ATHR_002_CREATEQUESTION("ATHR-002", "User is signed out.Sign in first to post a question");
 
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 
