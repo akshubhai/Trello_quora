@@ -8,9 +8,7 @@ import com.upgrad.quora.service.common.GenericErrorCode;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserEntity;
-import com.upgrad.quora.service.exception.AnswerNotFoundException;
-import com.upgrad.quora.service.exception.AuthorizationFailedException;
-import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -113,6 +113,37 @@ public class AnswerController {
         AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse().id(answerEntity.getUuid()).status(ConstantValues.ANSWER_DELETED);
 
         return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse, HttpStatus.OK);
+
+    }
+
+
+    @RequestMapping(method = RequestMethod.GET, path= "answer/all/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<AnswerDetailsResponse>> getAllAnswersToQuestion (@RequestHeader("authorization") final String authorization, @PathVariable("questionId") String questionId)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        GenericErrorCode err1 = GenericErrorCode.ATHR_001_GETALLANSWERSTOQUESTION;
+        GenericErrorCode err2 = GenericErrorCode.ATHR_002_GETALLANSWERSTOQUESTION;
+        GenericErrorCode err3 = GenericErrorCode.QUES_001_GETALLANSWERSTOQUESTION;
+
+
+        UserEntity userEntity = questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
+        QuestionEntity questionEntity = questionBusinessService.checkInvalidQuestion(questionId, err3);
+
+        //Call service to get all questions
+        List<AnswerEntity> createdAnswerEntityList = answerBusinessService.getAllAnswersByQuestionID(questionEntity);
+
+        //Rsponse to store responses and list of responses for final list sharing
+        List<AnswerDetailsResponse> entities = new ArrayList<AnswerDetailsResponse>();
+
+
+
+        for(AnswerEntity answerEntity : createdAnswerEntityList){
+            AnswerDetailsResponse answerDetailsResponse = new AnswerDetailsResponse();
+            answerDetailsResponse.id(answerEntity.getUuid()).answerContent(answerEntity.getAns()).questionContent(questionEntity.getContent());
+            entities.add(answerDetailsResponse);
+        }
+
+        return new ResponseEntity<List<AnswerDetailsResponse>>(entities, HttpStatus.OK);
 
     }
 
