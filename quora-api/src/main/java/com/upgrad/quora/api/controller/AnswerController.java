@@ -88,6 +88,7 @@ public class AnswerController {
         //Call service to update db
         answerBusinessService.editAnswer(answerEntity);
 
+        //Return required response model
         AnswerEditResponse answerEditResponse = new AnswerEditResponse().id(answerEntity.getUuid()).status(ConstantValues.ANSWER_EDITED);
 
         return new ResponseEntity<AnswerEditResponse>(answerEditResponse, HttpStatus.OK);
