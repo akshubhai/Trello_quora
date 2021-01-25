@@ -9,6 +9,7 @@ import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,6 +30,18 @@ public class QuestionBusinessService {
     public QuestionEntity createQuestion(QuestionEntity questionEntity)
     {
         return questionDao.createQuestion(questionEntity);
+    }
+
+    public UserEntity userExistCheck(String userId, GenericErrorCode err3) throws UserNotFoundException {
+
+        UserEntity userEntity = userDao.getUser(userId);
+
+        if (userEntity == null){
+            throw new UserNotFoundException(err3.getCode(), err3.getDefaultMessage());
+        }
+
+        return userEntity;
+
     }
 
 
@@ -113,5 +126,11 @@ public class QuestionBusinessService {
     @Transactional(propagation = Propagation.REQUIRED)
     public QuestionEntity removeQuestion(QuestionEntity questionEntity) {
         return questionDao.removeQuestion(questionEntity);
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<QuestionEntity> getAllQuestionsByUserID(UserEntity userEntity) {
+        return questionDao.getAllQuestionsByUserID(userEntity);
     }
 }

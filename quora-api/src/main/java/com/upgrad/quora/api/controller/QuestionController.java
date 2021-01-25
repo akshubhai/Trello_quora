@@ -9,6 +9,7 @@ import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
+import com.upgrad.quora.service.exception.UserNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,7 +57,7 @@ public class QuestionController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path= "/question/all", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<QuestionResponse>> getAllQuestions (@RequestHeader("authorization") final String authorization)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestions (@RequestHeader("authorization") final String authorization)
             throws AuthenticationFailedException, AuthorizationFailedException {
 
         GenericErrorCode err1 = GenericErrorCode.ATHR_001_GETALLQUESTION;
@@ -69,15 +70,15 @@ public class QuestionController {
         List<QuestionEntity> createdQuestionEntityList = questionBusinessService.getAllQuestions();
 
         //Rsponse to store responses and list of responses for final list sharing
-        List<QuestionResponse> entities = new ArrayList<QuestionResponse>();
+        List<QuestionDetailsResponse> entities = new ArrayList<QuestionDetailsResponse>();
 
         for(QuestionEntity questionEntity : createdQuestionEntityList){
-            QuestionResponse questionResponse = new QuestionResponse();
-            questionResponse.id(questionEntity.getUuid()).status(questionEntity.getContent());
-            entities.add(questionResponse);
+            QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse();
+            questionDetailsResponse.id(questionEntity.getUuid()).content(questionEntity.getContent());
+            entities.add(questionDetailsResponse);
         }
 
-        return new ResponseEntity<List<QuestionResponse>>(entities, HttpStatus.OK);
+        return new ResponseEntity<List<QuestionDetailsResponse>>(entities, HttpStatus.OK);
 
     }
 
@@ -141,6 +142,33 @@ public class QuestionController {
 
     }
 
+
+    @RequestMapping(method = RequestMethod.GET, path= "question/all/{userId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<List<QuestionDetailsResponse>> getAllQuestionsByUser  (@RequestHeader("authorization") final String authorization, @PathVariable("userId") String userId)
+            throws AuthenticationFailedException, AuthorizationFailedException, UserNotFoundException {
+
+        GenericErrorCode err1 = GenericErrorCode.ATHR_001_GETALLQUESTIONBYUSER;
+        GenericErrorCode err2 = GenericErrorCode.ATHR_002_GETALLQUESTIONBYUSER;
+        GenericErrorCode err3 = GenericErrorCode.USR_001_GETALLQUESTIONBYUSER;
+
+        UserEntity userEntity = questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
+        UserEntity userEntity1 = questionBusinessService.userExistCheck(userId, err3);
+
+        //Call service to get all questions
+        List<QuestionEntity> createdQuestionEntityList = questionBusinessService.getAllQuestionsByUserID(userEntity);
+
+        //Rsponse to store responses and list of responses for final list sharing
+        List<QuestionDetailsResponse> entities = new ArrayList<QuestionDetailsResponse>();
+
+        for(QuestionEntity questionEntity : createdQuestionEntityList){
+            QuestionDetailsResponse questionDetailsResponse = new QuestionDetailsResponse();
+            questionDetailsResponse.id(questionEntity.getUuid()).content(questionEntity.getContent());
+            entities.add(questionDetailsResponse);
+        }
+
+        return new ResponseEntity<List<QuestionDetailsResponse>>(entities, HttpStatus.OK);
+
+    }
 
 }
 

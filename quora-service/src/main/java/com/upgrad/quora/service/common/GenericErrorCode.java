@@ -34,7 +34,10 @@ public enum GenericErrorCode implements ErrorCode {
     ATHR_001_DELETEQUESTION("ATHR-001", "User has not signed in"),
     ATHR_002_DELETEQUESTION("ATHR-002", "User is signed out.Sign in first to delete a question"),
     ATHR_003_DELETEQUESTION("ATHR-003", "Only the question owner or admin can delete the question"),
-    QUES_001_DELETEQUESTION("QUES-001", "Entered question uuid does not exist");
+    QUES_001_DELETEQUESTION("QUES-001", "Entered question uuid does not exist"),
+    ATHR_001_GETALLQUESTIONBYUSER("ATHR-001", "User has not signed in"),
+    ATHR_002_GETALLQUESTIONBYUSER("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user"),
+    USR_001_GETALLQUESTIONBYUSER("USR-001", "User with entered uuid whose question details are to be seen does not exist");
 
 
 
