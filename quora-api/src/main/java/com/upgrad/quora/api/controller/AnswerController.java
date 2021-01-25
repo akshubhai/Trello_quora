@@ -1,5 +1,7 @@
 package com.upgrad.quora.api.controller;
 
+import com.upgrad.quora.api.model.AnswerEditRequest;
+import com.upgrad.quora.api.model.AnswerEditResponse;
 import com.upgrad.quora.api.model.AnswerRequest;
 import com.upgrad.quora.api.model.AnswerResponse;
 import com.upgrad.quora.service.business.AnswerBusinessService;
@@ -9,6 +11,7 @@ import com.upgrad.quora.service.common.GenericErrorCode;
 import com.upgrad.quora.service.entity.AnswerEntity;
 import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserEntity;
+import com.upgrad.quora.service.exception.AnswerNotFoundException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
 import com.upgrad.quora.service.exception.InvalidQuestionException;
 import org.modelmapper.ModelMapper;
@@ -64,5 +67,32 @@ public class AnswerController {
 
 
     }
+
+    @RequestMapping(method = RequestMethod.PUT , path= "/answer/edit/{answerId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerEditResponse> editAnswerContent (@RequestHeader("authorization") final String authorization, @PathVariable("answerId") final String answerId, final AnswerEditRequest answerEditRequest) throws AuthorizationFailedException, InvalidQuestionException, AnswerNotFoundException {
+
+        GenericErrorCode err1 = GenericErrorCode.ATHR_001_EDITANSWER;
+        GenericErrorCode err2 = GenericErrorCode.ATHR_002_EDITANSWER;
+        GenericErrorCode err3 = GenericErrorCode.ATHR_003_EDITANSWER;
+        GenericErrorCode err4 = GenericErrorCode.ANS_001_EDITANSWER;
+
+
+        UserEntity userEntity =  questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
+        UserEntity userEntity1 = answerBusinessService.answerEditOwner(authorization, answerId, err3, err4);
+
+        //Call service to get answer
+        AnswerEntity answerEntity = answerBusinessService.getAnswerbyId(answerId);
+
+        answerEntity.setAns(answerEditRequest.getContent());
+
+        //Call service to update db
+        answerBusinessService.editAnswer(answerEntity);
+
+        AnswerEditResponse answerEditResponse = new AnswerEditResponse().id(answerEntity.getUuid()).status(ConstantValues.ANSWER_EDITED);
+
+        return new ResponseEntity<AnswerEditResponse>(answerEditResponse, HttpStatus.OK);
+
+    }
+
 
 }
