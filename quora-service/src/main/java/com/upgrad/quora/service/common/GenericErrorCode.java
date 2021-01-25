@@ -24,7 +24,19 @@ public enum GenericErrorCode implements ErrorCode {
     ATHR_003_ADMIN("ATHR-003", "Unauthorized Access, Entered user is not an admin"),
     USR_001_ADMIN("USR-001", "User with entered uuid to be deleted does not exist"),
     ATHR_001_CREATEQUESTION("ATHR-001", "User has not signed in"),
-    ATHR_002_CREATEQUESTION("ATHR-002", "User is signed out.Sign in first to post a question");
+    ATHR_002_CREATEQUESTION("ATHR-002", "User is signed out.Sign in first to post a question"),
+    ATHR_001_GETALLQUESTION("ATHR-001", "User has not signed in"),
+    ATHR_002_GETALLQUESTION("ATHR-002", "User is signed out.Sign in first to get all questions"),
+    ATHR_001_EDITALLQUESTION("ATHR-001", "User has not signed in"),
+    ATHR_002_EDITALLQUESTION("ATHR-002", "User is signed out.Sign in first to edit the question"),
+    ATHR_003_EDITALLQUESTION("ATHR-003", "Only the question owner can edit the question"),
+    QUES_001_EDITALLQUESTION("QUES-001", "Entered question uuid does not exist"),
+    ATHR_001_DELETEQUESTION("ATHR-001", "User has not signed in"),
+    ATHR_002_DELETEQUESTION("ATHR-002", "User is signed out.Sign in first to delete a question"),
+    ATHR_003_DELETEQUESTION("ATHR-003", "Only the question owner or admin can delete the question"),
+    QUES_001_DELETEQUESTION("QUES-001", "Entered question uuid does not exist");
+
+
 
     private static final Map<String, GenericErrorCode> LOOKUP = new HashMap<String, GenericErrorCode>();
 
