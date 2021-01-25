@@ -10,5 +10,6 @@ public class ConstantValues {
     public static final int EXPIRE_TIME = 8;
     public static final String QUESTION_CREATED = "QUESTION CREATED";
     public static final String QUESTION_EDITED = "QUESTION EDITED";
+    public static final String QUESTION_DELETED = "QUESTION DELETED";
 
 }

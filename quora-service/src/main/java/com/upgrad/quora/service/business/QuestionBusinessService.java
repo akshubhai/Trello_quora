@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.common.ConstantValues;
 import com.upgrad.quora.service.common.GenericErrorCode;
 import com.upgrad.quora.service.dao.QuestionDao;
 import com.upgrad.quora.service.dao.UserDao;
@@ -63,7 +64,7 @@ public class QuestionBusinessService {
         questionDao.editQuestion(questionEntity);
     }
 
-    public UserEntity questionOwner(String authorization, String questionId, GenericErrorCode err3, GenericErrorCode err4) throws AuthorizationFailedException, InvalidQuestionException {
+    public UserEntity questionEditOwner(String authorization, String questionId, GenericErrorCode err3, GenericErrorCode err4) throws AuthorizationFailedException, InvalidQuestionException {
 
         UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorization);
         UserEntity userEntityLoggedIn =  userAuthTokenEntity.getUser();
@@ -84,4 +85,33 @@ public class QuestionBusinessService {
         return userEntityLoggedIn;
     }
 
+
+
+
+    public UserEntity adminDeleteCheck(String authorization, String questionId, GenericErrorCode err3, GenericErrorCode err4) throws InvalidQuestionException, AuthorizationFailedException {
+
+        UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorization);
+        UserEntity userEntityLoggedIn =  userAuthTokenEntity.getUser();
+
+        QuestionEntity questionEntity = questionDao.getQuestionbyId(questionId);
+
+        if (questionEntity == null){
+            throw new InvalidQuestionException(err4.getCode(), err4.getDefaultMessage());
+        }
+
+        UserEntity questionOwnerEntity = questionEntity.getUser();
+
+
+        if( (userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()) | (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
+            throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
+        }
+
+        return userEntityLoggedIn;
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public QuestionEntity removeQuestion(QuestionEntity questionEntity) {
+        return questionDao.removeQuestion(questionEntity);
+    }
 }

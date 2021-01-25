@@ -1,9 +1,6 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.QuestionEditRequest;
-import com.upgrad.quora.api.model.QuestionEditResponse;
-import com.upgrad.quora.api.model.QuestionRequest;
-import com.upgrad.quora.api.model.QuestionResponse;
+import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.common.ConstantValues;
 import com.upgrad.quora.service.common.GenericErrorCode;
@@ -96,7 +93,7 @@ public class QuestionController {
 
         //Call service to check exceptions
         UserEntity userEntity = questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
-        UserEntity userEntity1 = questionBusinessService.questionOwner(authorization, questionId ,err3 ,err4);
+        UserEntity userEntity1 = questionBusinessService.questionEditOwner(authorization, questionId ,err3 ,err4);
 
 
         //Call service to get question
@@ -114,6 +111,36 @@ public class QuestionController {
         return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
 
     }
+
+
+    @RequestMapping(method = RequestMethod.DELETE, path= "/question/delete/{questionId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionDeleteResponse> deleteQuestion  (@RequestHeader("authorization") final String authorization, @PathVariable("questionId") String questionId)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        GenericErrorCode err1 = GenericErrorCode.ATHR_001_DELETEQUESTION;
+        GenericErrorCode err2 = GenericErrorCode.ATHR_002_DELETEQUESTION;
+        GenericErrorCode err3 = GenericErrorCode.ATHR_003_DELETEQUESTION;
+        GenericErrorCode err4 = GenericErrorCode.QUES_001_DELETEQUESTION;
+
+
+        //Call service to check exceptions
+        UserEntity userEntity = questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
+        UserEntity userEntity2 = questionBusinessService.adminDeleteCheck(authorization, questionId ,err3 ,err4);
+
+
+        //Call service to get question
+        QuestionEntity createdQuestionEntity = questionBusinessService.getQuestionbyId(questionId);
+
+        //Call service to remove question in db
+        QuestionEntity removedQuestionEntity = questionBusinessService.removeQuestion(createdQuestionEntity);
+
+
+        QuestionDeleteResponse questionDeleteResponse = new QuestionDeleteResponse().id(removedQuestionEntity.getUuid()).status(ConstantValues.QUESTION_DELETED);
+
+        return new ResponseEntity<QuestionDeleteResponse>(questionDeleteResponse, HttpStatus.OK);
+
+    }
+
 
 }
 
