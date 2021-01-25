@@ -133,4 +133,17 @@ public class QuestionBusinessService {
     public List<QuestionEntity> getAllQuestionsByUserID(UserEntity userEntity) {
         return questionDao.getAllQuestionsByUserID(userEntity);
     }
+
+    public QuestionEntity checkInvalidQuestion(String questionId, GenericErrorCode err3) throws InvalidQuestionException {
+
+        QuestionEntity questionEntity = questionDao.getQuestionbyId(questionId);
+
+        if (questionEntity == null){
+            throw new InvalidQuestionException(err3.getCode(), err3.getDefaultMessage());
+        }
+
+        return questionEntity;
+    }
+
+
 }

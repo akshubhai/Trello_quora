@@ -11,5 +11,8 @@ public class ConstantValues {
     public static final String QUESTION_CREATED = "QUESTION CREATED";
     public static final String QUESTION_EDITED = "QUESTION EDITED";
     public static final String QUESTION_DELETED = "QUESTION DELETED";
+    public static final String ANSWER_CREATED = "ANSWER CREATED";
+    public static final String ANSWER_EDITED = "ANSWER EDITED";
+    public static final String ANSWER_DELETED = "ANSWER DELETED";
 
 }

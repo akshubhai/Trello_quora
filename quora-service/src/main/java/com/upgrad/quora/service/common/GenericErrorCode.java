@@ -37,7 +37,21 @@ public enum GenericErrorCode implements ErrorCode {
     QUES_001_DELETEQUESTION("QUES-001", "Entered question uuid does not exist"),
     ATHR_001_GETALLQUESTIONBYUSER("ATHR-001", "User has not signed in"),
     ATHR_002_GETALLQUESTIONBYUSER("ATHR-002", "User is signed out.Sign in first to get all questions posted by a specific user"),
-    USR_001_GETALLQUESTIONBYUSER("USR-001", "User with entered uuid whose question details are to be seen does not exist");
+    USR_001_GETALLQUESTIONBYUSER("USR-001", "User with entered uuid whose question details are to be seen does not exist"),
+    ATHR_001_CREATEANSWER("ATHR-001", "User has not signed in"),
+    ATHR_002_CREATEANSWER("ATHR-002", "User is signed out.Sign in first to post an answer"),
+    QUES_001_CREATEANSWER("QUES-001", "The question entered is invalid"),
+    ATHR_001_EDITANSWER("ATHR-001", "User has not signed in"),
+    ATHR_002_EDITANSWER("ATHR-002", "User is signed out.Sign in first to edit an answer"),
+    ATHR_003_EDITANSWER("ATHR-003", "Only the answer owner can edit the answer"),
+    ANS_001_EDITANSWER("ANS-001", "Entered answer uuid does not exist"),
+    ATHR_001_DELETEANSWER("ATHR-001", "User has not signed in"),
+    ATHR_002_DELETEANSWER("ATHR-002", "User is signed out.Sign in first to delete an answer"),
+    ATHR_003_DELETEANSWER("ATHR-003", "Only the answer owner or admin can delete the answer"),
+    ANS_001_DELETEANSWER("ANS-001", "Entered answer uuid does not exist"),
+    ATHR_001_GETALLANSWERSTOQUESTION("ATHR-001", "User has not signed in"),
+    ATHR_002_GETALLANSWERSTOQUESTION("ATHR-002", "User is signed out.Sign in first to get the answers"),
+    QUES_001_GETALLANSWERSTOQUESTION("QUES-001", "User with entered uuid whose question details are to be seen does not exist") ;
 
 
 
