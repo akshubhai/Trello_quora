@@ -7,6 +7,7 @@ import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserAuthTokenEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.InvalidQuestionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -47,26 +48,40 @@ public class QuestionBusinessService {
         return userEntity;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public List<QuestionEntity> getAllQuestions() {
         return questionDao.getAllQuestions();
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    public QuestionEntity getQuestionbyId(String questionId) {
+        return questionDao.getQuestionbyId(questionId);
+    }
 
-//    public UserEntity userAuthenticateQuestion(QuestionEntity questionEntity, GenericErrorCode err1, GenericErrorCode err2) throws AuthorizationFailedException {
-//
-//        QuestionEntity getQuestionEntity = questionDao.
-//
-//        if (getUserEntity == null) {
-//            throw new AuthorizationFailedException(err1.getCode(), err1.getDefaultMessage());
-//        }
-//
-//        if (getUserEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
-//            throw new AuthorizationFailedException(err2.getCode(), err2.getDefaultMessage());
-//        }
-//
-//        UserEntity userEntity = userAuthTokenEntity.getUser();
-//
-//        return userEntity;
-//    }
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void editQuestion(QuestionEntity questionEntity) {
+        questionDao.editQuestion(questionEntity);
+    }
+
+    public UserEntity questionOwner(String authorization, String questionId, GenericErrorCode err3, GenericErrorCode err4) throws AuthorizationFailedException, InvalidQuestionException {
+
+        UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorization);
+        UserEntity userEntityLoggedIn =  userAuthTokenEntity.getUser();
+
+        QuestionEntity questionEntity = questionDao.getQuestionbyId(questionId);
+
+        if (questionEntity == null){
+            throw new InvalidQuestionException(err4.getCode(), err4.getDefaultMessage());
+        }
+
+        UserEntity questionOwnerEntity = questionEntity.getUser();
+
+
+        if(userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()){
+            throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
+        }
+
+        return userEntityLoggedIn;
+    }
 
 }

@@ -27,4 +27,16 @@ public class QuestionDao {
         }
     }
 
+    public QuestionEntity getQuestionbyId(String questionId){
+        try {
+            return entityManager.createNamedQuery("questionByUuid", QuestionEntity.class).setParameter("uuid", questionId).getSingleResult();
+        }
+        catch (NoResultException nre){
+            return null;
+        }
+    }
+
+    public void editQuestion(final QuestionEntity questionEntity) {
+        entityManager.merge(questionEntity);
+    }
 }

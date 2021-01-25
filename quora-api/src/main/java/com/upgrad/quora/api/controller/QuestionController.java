@@ -1,5 +1,7 @@
 package com.upgrad.quora.api.controller;
 
+import com.upgrad.quora.api.model.QuestionEditRequest;
+import com.upgrad.quora.api.model.QuestionEditResponse;
 import com.upgrad.quora.api.model.QuestionRequest;
 import com.upgrad.quora.api.model.QuestionResponse;
 import com.upgrad.quora.service.business.QuestionBusinessService;
@@ -9,15 +11,13 @@ import com.upgrad.quora.service.entity.QuestionEntity;
 import com.upgrad.quora.service.entity.UserEntity;
 import com.upgrad.quora.service.exception.AuthenticationFailedException;
 import com.upgrad.quora.service.exception.AuthorizationFailedException;
+import com.upgrad.quora.service.exception.InvalidQuestionException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -84,6 +84,36 @@ public class QuestionController {
 
     }
 
+    @RequestMapping(method = RequestMethod.PUT, path= "/question/edit/{questionId}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<QuestionEditResponse> editQuestionContent (@RequestHeader("authorization") final String authorization, @PathVariable("questionId") String questionId, QuestionEditRequest questionEditRequest)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        GenericErrorCode err1 = GenericErrorCode.ATHR_001_EDITALLQUESTION;
+        GenericErrorCode err2 = GenericErrorCode.ATHR_002_EDITALLQUESTION;
+        GenericErrorCode err3 = GenericErrorCode.ATHR_003_EDITALLQUESTION;
+        GenericErrorCode err4 = GenericErrorCode.QUES_001_EDITALLQUESTION;
+
+
+        //Call service to check exceptions
+        UserEntity userEntity = questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
+        UserEntity userEntity1 = questionBusinessService.questionOwner(authorization, questionId ,err3 ,err4);
+
+
+        //Call service to get question
+        QuestionEntity createdQuestionEntity = questionBusinessService.getQuestionbyId(questionId);
+
+        //Add new content to existing entity
+        createdQuestionEntity.setContent(questionEditRequest.getContent());
+
+        //Call service to edit question in db
+        questionBusinessService.editQuestion(createdQuestionEntity);
+
+
+        QuestionEditResponse questionEditResponse = new QuestionEditResponse().id(createdQuestionEntity.getUuid()).status(ConstantValues.QUESTION_EDITED);
+
+        return new ResponseEntity<QuestionEditResponse>(questionEditResponse, HttpStatus.OK);
+
+    }
 
 }
 
