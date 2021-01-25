@@ -44,13 +44,13 @@ public class AnswerBusinessService {
 
         AnswerEntity answerEntity = answerDao.getAnswerbyId(answerId);
 
+        UserEntity userEntityAnswer = answerEntity.getUser();
+
         if (answerEntity == null){
             throw new AnswerNotFoundException(err4.getCode(), err4.getDefaultMessage());
         }
 
-        UserEntity userEntityAnswer = answerEntity.getUser();
-
-        if (userEntityAnswer.getUuid() != userEntityLoggedIn.getUuid()){
+        else if (userEntityAnswer.getUuid() != userEntityLoggedIn.getUuid()){
             throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
         }
 
@@ -77,13 +77,14 @@ public class AnswerBusinessService {
 
         AnswerEntity answerEntity = answerDao.getAnswerbyId(answerId);
 
+        UserEntity userEntityAnswer = answerEntity.getUser();
+
         if (answerEntity == null){
             throw new AnswerNotFoundException(err4.getCode(), err4.getDefaultMessage());
         }
 
-        UserEntity userEntityAnswer = answerEntity.getUser();
 
-        if ( (userEntityAnswer.getUuid() != userEntityLoggedIn.getUuid()) & (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
+        else if ( (userEntityAnswer.getUuid() != userEntityLoggedIn.getUuid()) & (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
             throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
         }
 

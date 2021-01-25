@@ -42,21 +42,25 @@ public class UserAdminBusinessService {
     public void removeUser(final String uuid,final String authorizationToken) throws AuthorizationFailedException, UserNotFoundException {
 
         UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorizationToken);
-
-        if (userAuthTokenEntity == null) {
-            throw new AuthorizationFailedException(ATHR_001_ADMIN.getCode(), ATHR_001_ADMIN.getDefaultMessage());
-        }
-
-        if (userAuthTokenEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
-            throw new AuthorizationFailedException(ATHR_002_ADMIN.getCode(), ATHR_002_ADMIN.getDefaultMessage());
-        }
-
         UserEntity userEntity = userDao.getUser(uuid);
-        if (userEntity == null) {
+
+        if (userAuthTokenEntity.getUser().getRole().equals(ConstantValues.DEFAULT_USER_ROLE)) {
+            throw new AuthorizationFailedException(ATHR_003_ADMIN.getCode(), ATHR_003_ADMIN.getDefaultMessage());
+        }
+
+        else if (userEntity == null) {
             throw new UserNotFoundException(USR_001_ADMIN.getCode(), USR_001_ADMIN.getDefaultMessage());
         }
 
-        if (userAuthTokenEntity.getUser().getRole().equals(ConstantValues.DEFAULT_USER_ROLE)) {
+        else if (userAuthTokenEntity == null) {
+            throw new AuthorizationFailedException(ATHR_001_ADMIN.getCode(), ATHR_001_ADMIN.getDefaultMessage());
+        }
+
+        else if (userAuthTokenEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException(ATHR_002_ADMIN.getCode(), ATHR_002_ADMIN.getDefaultMessage());
+        }
+
+        else if (userAuthTokenEntity.getUser().getRole().equals(ConstantValues.DEFAULT_USER_ROLE)) {
             throw new AuthorizationFailedException(ATHR_003_ADMIN.getCode(), ATHR_003_ADMIN.getDefaultMessage());
         }
 

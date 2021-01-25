@@ -53,7 +53,7 @@ public class QuestionBusinessService {
             throw new AuthorizationFailedException(err1.getCode(), err1.getDefaultMessage());
         }
 
-        if (userAuthTokenEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+        else if (userAuthTokenEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
             throw new AuthorizationFailedException(err2.getCode(), err2.getDefaultMessage());
         }
 
@@ -83,15 +83,13 @@ public class QuestionBusinessService {
         UserEntity userEntityLoggedIn =  userAuthTokenEntity.getUser();
 
         QuestionEntity questionEntity = questionDao.getQuestionbyId(questionId);
+        UserEntity questionOwnerEntity = questionEntity.getUser();
 
         if (questionEntity == null){
             throw new InvalidQuestionException(err4.getCode(), err4.getDefaultMessage());
         }
 
-        UserEntity questionOwnerEntity = questionEntity.getUser();
-
-
-        if(userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()){
+        else if(userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()){
             throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
         }
 
@@ -107,15 +105,13 @@ public class QuestionBusinessService {
         UserEntity userEntityLoggedIn =  userAuthTokenEntity.getUser();
 
         QuestionEntity questionEntity = questionDao.getQuestionbyId(questionId);
+        UserEntity questionOwnerEntity = questionEntity.getUser();
 
         if (questionEntity == null){
             throw new InvalidQuestionException(err4.getCode(), err4.getDefaultMessage());
         }
 
-        UserEntity questionOwnerEntity = questionEntity.getUser();
-
-
-        if( (userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()) & (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
+        else if( (userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()) & (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
             throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
         }
 

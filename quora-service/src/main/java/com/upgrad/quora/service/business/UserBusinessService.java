@@ -41,12 +41,12 @@ public class UserBusinessService {
 
     public void verificationSignUp(String userName, String email) throws SignUpRestrictedException {
         UserEntity newuserEntity = userDao.getUserByUserName(userName);
+        UserEntity newuserEntity1 = userDao.getUserByEmail(email);
         if(newuserEntity != null){
             throw new SignUpRestrictedException(SGUR_001.getCode(), SGUR_001.getDefaultMessage());
         }
 
-        UserEntity newuserEntity1 = userDao.getUserByEmail(email);
-        if(newuserEntity1 != null){
+        else if(newuserEntity1 != null){
             throw new SignUpRestrictedException(SGUR_002.getCode(), SGUR_002.getDefaultMessage());
         }
     }
@@ -119,7 +119,7 @@ public class UserBusinessService {
             throw new SignOutRestrictedException(SGOR_001.getCode(), SGOR_001.getDefaultMessage());
         }
 
-        if (userAuthTokenEntity.getLogoutAt() != null) {
+        else if (userAuthTokenEntity.getLogoutAt() != null) {
             throw new SignOutRestrictedException(SGOR_001.getCode(), SGOR_001.getDefaultMessage());
         }
         userAuthTokenEntity.setLogoutAt(ZonedDateTime.now());

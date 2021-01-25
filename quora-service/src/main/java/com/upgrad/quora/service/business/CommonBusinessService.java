@@ -22,17 +22,17 @@ public class CommonBusinessService {
 
         UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorizationToken);
 
-        if (userAuthTokenEntity == null) {
-            throw new AuthorizationFailedException(ATHR_001_COMMON.getCode(), ATHR_001_COMMON.getDefaultMessage());
-        }
-
-        if (userAuthTokenEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
-            throw new AuthorizationFailedException(ATHR_002_COMMON.getCode(), ATHR_002_COMMON.getDefaultMessage());
-        }
-
         UserEntity userEntity = userDao.getUser(uuid);
         if (userEntity == null) {
             throw new UserNotFoundException(USER_001_COMMON.getCode(), USER_001_COMMON.getDefaultMessage());
+        }
+
+        else if (userAuthTokenEntity == null) {
+            throw new AuthorizationFailedException(ATHR_001_COMMON.getCode(), ATHR_001_COMMON.getDefaultMessage());
+        }
+
+        else if (userAuthTokenEntity.getLogoutAt() != null || userAuthTokenEntity.getExpiresAt().isBefore(ZonedDateTime.now())) {
+            throw new AuthorizationFailedException(ATHR_002_COMMON.getCode(), ATHR_002_COMMON.getDefaultMessage());
         }
 
         return userEntity;
