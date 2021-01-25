@@ -1,9 +1,6 @@
 package com.upgrad.quora.api.controller;
 
-import com.upgrad.quora.api.model.AnswerEditRequest;
-import com.upgrad.quora.api.model.AnswerEditResponse;
-import com.upgrad.quora.api.model.AnswerRequest;
-import com.upgrad.quora.api.model.AnswerResponse;
+import com.upgrad.quora.api.model.*;
 import com.upgrad.quora.service.business.AnswerBusinessService;
 import com.upgrad.quora.service.business.QuestionBusinessService;
 import com.upgrad.quora.service.common.ConstantValues;
@@ -92,6 +89,30 @@ public class AnswerController {
         AnswerEditResponse answerEditResponse = new AnswerEditResponse().id(answerEntity.getUuid()).status(ConstantValues.ANSWER_EDITED);
 
         return new ResponseEntity<AnswerEditResponse>(answerEditResponse, HttpStatus.OK);
+
+    }
+
+
+    @RequestMapping(method = RequestMethod.DELETE, path= "/answer/delete/{answerId}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<AnswerDeleteResponse> deleteAnswer (@RequestHeader("authorization") final String authorization, @PathVariable("answerId") String answerId) throws AuthorizationFailedException, AnswerNotFoundException {
+
+        GenericErrorCode err1 = GenericErrorCode.ATHR_001_DELETEANSWER;
+        GenericErrorCode err2 = GenericErrorCode.ATHR_002_DELETEANSWER;
+        GenericErrorCode err3 = GenericErrorCode.ATHR_003_DELETEANSWER;
+        GenericErrorCode err4 = GenericErrorCode.ANS_001_DELETEANSWER;
+
+        UserEntity userEntity =  questionBusinessService.userAuthenticateSignin(authorization, err1, err2);
+        UserEntity userEntity1 = answerBusinessService.answerAdminDeleteCheck(authorization, answerId, err3, err4);
+
+        //Call service to get answer
+        AnswerEntity answerEntity = answerBusinessService.getAnswerbyId(answerId);
+
+        //Call service to remove answer in db
+        AnswerEntity removedAnswerEntity = answerBusinessService.removeAnswer(answerEntity);
+
+        AnswerDeleteResponse answerDeleteResponse = new AnswerDeleteResponse().id(answerEntity.getUuid()).status(ConstantValues.ANSWER_DELETED);
+
+        return new ResponseEntity<AnswerDeleteResponse>(answerDeleteResponse, HttpStatus.OK);
 
     }
 

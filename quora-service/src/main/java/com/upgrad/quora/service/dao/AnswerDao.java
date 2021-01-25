@@ -26,7 +26,12 @@ public class AnswerDao {
         }
     }
 
-    public void editAnswer(AnswerEntity answerEntity) {
+    public void editAnswer( AnswerEntity answerEntity) {
         entityManager.persist(answerEntity);
+    }
+
+    public AnswerEntity removeAnswer(final AnswerEntity answerEntity) {
+        entityManager.remove(answerEntity);
+        return answerEntity;
     }
 }

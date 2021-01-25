@@ -115,7 +115,7 @@ public class QuestionBusinessService {
         UserEntity questionOwnerEntity = questionEntity.getUser();
 
 
-        if( (userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()) | (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
+        if( (userEntityLoggedIn.getUuid() != questionOwnerEntity.getUuid()) & (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
             throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
         }
 

@@ -1,5 +1,6 @@
 package com.upgrad.quora.service.business;
 
+import com.upgrad.quora.service.common.ConstantValues;
 import com.upgrad.quora.service.common.GenericErrorCode;
 import com.upgrad.quora.service.dao.AnswerDao;
 import com.upgrad.quora.service.dao.QuestionDao;
@@ -64,5 +65,31 @@ public class AnswerBusinessService {
     @Transactional(propagation = Propagation.REQUIRED)
     public void editAnswer(AnswerEntity answerEntity) {
         answerDao.editAnswer(answerEntity);
+    }
+
+    public UserEntity answerAdminDeleteCheck(String authorization, String answerId, GenericErrorCode err3, GenericErrorCode err4) throws AnswerNotFoundException, AuthorizationFailedException {
+
+        UserAuthTokenEntity userAuthTokenEntity = userDao.fetchAuthToken(authorization);
+        UserEntity userEntityLoggedIn =  userAuthTokenEntity.getUser();
+
+        AnswerEntity answerEntity = answerDao.getAnswerbyId(answerId);
+
+        if (answerEntity == null){
+            throw new AnswerNotFoundException(err4.getCode(), err4.getDefaultMessage());
+        }
+
+        UserEntity userEntityAnswer = answerEntity.getUser();
+
+        if ( (userEntityAnswer.getUuid() != userEntityLoggedIn.getUuid()) & (userEntityLoggedIn.getRole() == ConstantValues.DEFAULT_USER_ROLE) ){
+            throw new AuthorizationFailedException(err3.getCode(),err3.getDefaultMessage());
+        }
+
+        return userEntityAnswer;
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public AnswerEntity removeAnswer(AnswerEntity answerEntity) {
+        return answerDao.removeAnswer(answerEntity);
     }
 }
